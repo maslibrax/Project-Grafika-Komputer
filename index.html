@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Peta Spasial Perkotaan — Tanjungpinang</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!--CANVAS-->
+  <canvas id="c"></canvas>
+
+  <!--UI SHELL — semua elemen antarmuka -->
+  <div id="ui">
+
+    <!-- TOPBAR — informasi statistik peta -->
+    <div id="topbar">
+      <h2>🗺 Peta Spasial Perkotaan</h2>
+      <div class="stat">Node <b id="tNodes">0</b></div>
+      <div class="tsep"></div>
+      <div class="stat">Jalan <b id="tRoads">0</b></div>
+      <div class="tsep"></div>
+      <div class="stat">Rute <b id="tRoute">—</b></div>
+      <div class="tsep"></div>
+      <div class="stat">Zoom <b id="tZoom">100%</b></div>
+    </div>
+
+    <!-- PANEL KIRI -->
+    <div id="vehicle-panel">
+      <div class="vp-title">OBJEK</div>
+      <button class="vbtn active" data-v="car">🚗 Mobil</button>
+      <button class="vbtn" data-v="motor">🏍 Motor</button>
+      <button class="vbtn" data-v="bike">🚲 Sepeda</button>
+      <button class="vbtn" data-v="person">🚶 Orang</button>
+    </div>
+
+     <!-- KONTROL BAWAH -->
+    <div id="controls">
+      <button class="btn primary" id="btnPlay">▶ Start Track</button>
+      <div class="csep"></div>
+      <button class="btn follow-on" id="btnFollow">📷 Follow</button>
+      <div class="csep"></div>
+      <button class="btn" id="btnMap">🔀 Acak Map</button>
+      <div class="csep"></div>
+      <button class="btn" id="btnPos">📍 Acak Posisi</button>
+      <div class="csep"></div>
+      <button class="btn danger" id="btnReset">↺ Reset</button>
+    </div>
+
+     <!-- ZOOM -->
+    <div id="zoom-ctrl">
+      <button class="zbtn" id="btnZIn">+</button>
+      <button class="zbtn" id="btnZOut">−</button>
+    </div>
+
+    <!-- STATUS — indikator kiri bawah -->
+    <div id="status">
+      <div class="dot" id="dot"></div>
+      <span id="statusTxt">Siap</span>
+    </div>
+
+    <!-- BADGE follow aktif -->
+    <div id="follow-badge">📷 Mengikuti objek...</div>
+
+     <div id="toast"></div>
+
+    </div>
+
+    </body>
+</html>
