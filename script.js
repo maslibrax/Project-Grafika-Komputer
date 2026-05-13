@@ -92,4 +92,25 @@
   generateParks();
   console.log("Buildings:", buildings.length, "| Parks:", parks.length);
 
+   function resize() {
+    cv.width  = window.innerWidth;
+    cv.height = window.innerHeight;
+    clamp();
+    render();
+  }
+  window.addEventListener('resize', resize);
+
+//COMMIT 3
+  //fitZoom
+  function fitZoom() {
+    zoom = Math.min(cv.width / W, cv.height / H) * 0.92;
+  }
+
+  //centerView — memposisikan kamera ke tengah peta.
+  function centerView() {
+    vx = W / 2 - cv.width  / (2 * zoom);
+    vy = H / 2 - cv.height / (2 * zoom);
+    clamp();
+  }
+  
 })();
