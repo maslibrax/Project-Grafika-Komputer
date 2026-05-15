@@ -222,4 +222,42 @@
     if (e.touches.length < 2)  lastDist2 = 0;
   });
 
+  // COMMIT 5
+  // ── Fungsi Grafis Manual ──────────────────────────────────────
+
+  function garisDAA(x1, y1, x2, y2, warna, tebal = 1) {
+    ctx.strokeStyle = warna;
+    ctx.lineWidth   = tebal;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  function bzPt(p0, c1, c2, p3, t) {
+    const m = 1 - t, m2 = m * m, t2 = t * t;
+    return {
+      x: m2*m*p0.x + 3*m2*t*c1.x + 3*m*t2*c2.x + t2*t*p3.x,
+      y: m2*m*p0.y + 3*m2*t*c1.y + 3*m*t2*c2.y + t2*t*p3.y
+    };
+  }
+
+  function bzDeriv(p0, c1, c2, p3, t) {
+    const m = 1 - t;
+    return {
+      dx: 3*m*m*(c1.x-p0.x) + 6*m*t*(c2.x-c1.x) + 3*t*t*(p3.x-c2.x),
+      dy: 3*m*m*(c1.y-p0.y) + 6*m*t*(c2.y-c1.y) + 3*t*t*(p3.y-c2.y)
+    };
+  }
+
+  function bzLen(p0, c1, c2, p3) {
+    let len = 0, prev = p0;
+    for (let i = 1; i <= 32; i++) {
+      const pt = bzPt(p0, c1, c2, p3, i / 32);
+      len += Math.hypot(pt.x - prev.x, pt.y - prev.y);
+      prev = pt;
+    }
+    return len;
+  }
+  
 })();
