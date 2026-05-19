@@ -298,4 +298,94 @@
     }
   }
   
+  // COMMIT 7
+  function dijkstra(src, dst) {
+    const INF = 1e18;
+    const dist     = new Array(nodes.length).fill(INF);
+    const prev     = new Array(nodes.length).fill(-1);
+    const prevEdge = new Array(nodes.length).fill(-1);
+    const visited  = new Array(nodes.length).fill(false);
+    dist[src] = 0;
+
+    // Bangun adjacency list
+    const adj = nodes.map(() => []);
+    edges.forEach((e, i) => {
+      adj[e.a].push({ n: e.b, w: e.len, ei: i });
+      adj[e.b].push({ n: e.a, w: e.len, ei: i });
+    });
+
+    // Priority queue sederhana
+    const pq = [{ n: src, d: 0 }];
+    while (pq.length) {
+      pq.sort((a, b) => a.d - b.d);
+      const { n, d } = pq.shift();
+      if (visited[n]) continue;
+      visited[n] = true;
+      if (n === dst) break;
+      for (const nb of adj[n]) {
+        const nd = d + nb.w;
+        if (nd < dist[nb.n]) {
+          dist[nb.n] = nd;
+          prev[nb.n] = n;
+          prevEdge[nb.n] = nb.ei;
+          pq.push({ n: nb.n, d: nd });
+        }
+      }
+    }
+
+    if (dist[dst] === INF) return { nodes: [], edges: [] };
+
+    // Rekonstruksi path dari dst ke src
+    const nodeSeq = [], edgeSeq = [];
+    let cur = dst;
+    while (cur !== src) { nodeSeq.unshift(cur); edgeSeq.unshift(prevEdge[cur]); cur = prev[cur]; }
+    nodeSeq.unshift(src);
+    return { nodes: nodeSeq, edges: edgeSeq };
+  }
+
+  //mengacak posisi titik START dan FINISH.
+  function randomStartGoal() {
+    if (startId !== null && nodes[startId]) nodes[startId].isStart = false;
+    if (goalId  !== null && nodes[goalId])  nodes[goalId].isGoal   = false;
+
+    startId = randInt(0, nodes.length);
+    goalId  = randInt(0, nodes.length);
+    while (goalId === startId) goalId = randInt(0, nodes.length);
+
+    nodes[startId].isStart = true;
+    nodes[goalId].isGoal   = true;
+    path = []; pathEdges = []; totalLen = 0; traveled = 0;
+    if (nodes[startId]) { objX = nodes[startId].x; objY = nodes[startId].y; }
+    document.getElementById('tRoute').textContent = '—';
+  }
+
+  //menghitung dan menyiapkan rute aktif
+  function computeRoute() {
+    if (startId === null || goalId === null) return;
+    const result = dijkstra(startId, goalId);
+    path = result.nodes;
+    const eids = result.edges;
+
+    if (path.length < 2) {
+      document.getElementById('tRoute').textContent = 'Tak ada rute';
+      pathEdges = []; totalLen = 0; return;
+    }
+
+    pathEdges = []; totalLen = 0;
+    for (let i = 0; i < eids.length; i++) {
+      const e = edges[eids[i]], fromNode = path[i];
+      let p0, c1, c2, p3;
+      // Sesuaikan arah Bezier dengan arah perjalanan
+      if (e.a === fromNode) { p0 = nodes[e.a]; c1 = e.c1; c2 = e.c2; p3 = nodes[e.b]; }
+      else                  { p0 = nodes[e.b]; c1 = e.c2; c2 = e.c1; p3 = nodes[e.a]; }
+      pathEdges.push({ p0, c1, c2, p3, len: e.len });
+      totalLen += e.len;
+    }
+
+    traveled = 0;
+    objX = nodes[startId].x; objY = nodes[startId].y;
+    document.getElementById('tRoute').textContent = `${path.length - 1} seg · ${Math.round(totalLen)}m`;
+  }
+
+  
 })();
