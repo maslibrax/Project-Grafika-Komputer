@@ -387,5 +387,81 @@
     document.getElementById('tRoute').textContent = `${path.length - 1} seg · ${Math.round(totalLen)}m`;
   }
 
-  
+  // COMMIT 8
+  //menggambar highlight rute Dijkstra di peta
+  function drawRouteHighlight() {
+    if (pathEdges.length === 0) return;
+    // Glow luar
+    for (const seg of pathEdges) {
+      ctx.beginPath(); ctx.moveTo(seg.p0.x, seg.p0.y);
+      ctx.bezierCurveTo(seg.c1.x, seg.c1.y, seg.c2.x, seg.c2.y, seg.p3.x, seg.p3.y);
+      ctx.strokeStyle = 'rgba(45,106,79,0.18)'; ctx.lineWidth = 26; ctx.stroke();
+    }
+    // Garis rute
+    for (const seg of pathEdges) {
+      ctx.beginPath(); ctx.moveTo(seg.p0.x, seg.p0.y);
+      ctx.bezierCurveTo(seg.c1.x, seg.c1.y, seg.c2.x, seg.c2.y, seg.p3.x, seg.p3.y);
+      ctx.strokeStyle = '#2d6a4f'; ctx.lineWidth = 4; ctx.setLineDash([]); ctx.stroke();
+    }
+    // Titik penanda jarak di sepanjang rute
+    ctx.fillStyle = 'rgba(45,106,79,0.5)';
+    for (let d = 180; d < totalLen; d += 260) {
+      let acc = 0;
+      for (const seg of pathEdges) {
+        if (acc + seg.len >= d) {
+          const tp = (d - acc) / seg.len;
+          const pt = bzPt(seg.p0, seg.c1, seg.c2, seg.p3, tp);
+          lingkaranNode(pt.x, pt.y, 4, 'rgba(45,106,79,0.5)', true);
+          break;
+        }
+        acc += seg.len;
+      }
+    }
+  }
+
+  //menggambar node persimpangan di peta
+  function drawNodes() {
+    for (const n of nodes) {
+      if (n.isStart || n.isGoal) continue;
+      const onPath = path.includes(n.id);
+      lingkaranNode(n.x, n.y, onPath ? 5 : 3, onPath ? '#2d6a4f' : '#a09070', true);
+      lingkaranNode(n.x, n.y, onPath ? 3 : 1.5, '#ffffff', true);
+    }
+  }
+
+  //menggambar tanda START/FINISH
+  function drawBendera(x, y, warna, label) {
+    ctx.save();
+    // Lingkaran dasar
+    ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2);
+    ctx.fillStyle = warna + '33'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = warna; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+    // Tiang bendera
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - 36);
+    ctx.strokeStyle = '#5a3e1b'; ctx.lineWidth = 2; ctx.stroke();
+    // Bendera segitiga (polygon manual)
+    ctx.beginPath();
+    ctx.moveTo(x,      y - 36);
+    ctx.lineTo(x + 18, y - 28);
+    ctx.lineTo(x,      y - 20);
+    ctx.closePath();
+    ctx.fillStyle = warna; ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 0.8; ctx.stroke();
+    // Label kotak
+    ctx.font = 'bold 10px Segoe UI,sans-serif';
+    ctx.textAlign = 'center';
+    const tw = ctx.measureText(label).width + 10;
+    ctx.fillStyle = 'rgba(255,252,245,0.92)';
+    ctx.strokeStyle = warna; ctx.lineWidth = 1;
+    ctx.fillRect(x - tw/2, y - 52, tw, 14);
+    ctx.strokeRect(x - tw/2, y - 52, tw, 14);
+    ctx.fillStyle = warna;
+    ctx.fillText(label, x, y - 41);
+    ctx.restore();
+  }
+
+
+
 })();
